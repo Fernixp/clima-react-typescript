@@ -1,4 +1,5 @@
-export const countries = [
+import type { country } from "../types";
+export const countries: country[] = [
   { code: "BO", name: "Bolivia" },
   { code: "US", name: "Estados Unidos" },
   { code: "MX", name: "México" },
