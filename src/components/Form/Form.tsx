@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { countries } from "../../data/countries";
 import styles from "./Form.module.css";
 import type { SearchType } from "../../types";
+import Alert from "../Alert/Alert";
 
 export default function Form() {
 
@@ -10,14 +11,26 @@ export default function Form() {
         city: '',
         country: ''
     })
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>)=>{
+
+    const [alert, setAlert] = useState('');
+    const handleChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>)=>{
         setSearch({
             ...search,
             [e.target.name]: e.target.value
         })
     }
+    const handleSubmit = (e: FormEvent<HTMLFormElement> ) =>{
+        e.preventDefault();
+        if(Object.values(search).includes('')){
+            setAlert('Por favor, complete todos los campos');
+            return;
+        }
+        console.log(search);
+    }
     return (
-        <form className={styles.form}>
+        <form className={styles.form}
+        onSubmit={handleSubmit}>
+            {alert && <Alert>{alert}</Alert>}
             <div className={styles.field}>
                 <label htmlFor="city">Ciudad:</label>
                 <input type="text" id="city" name="city"
