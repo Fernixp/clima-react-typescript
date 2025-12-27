@@ -8,6 +8,11 @@
     width: 95%;
     max-width:100rem;
     margin: 0 auto;
+    /* --- RESPONSIVE MOBILE --- */
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-top: 3rem;
 }
 
 @media (min-width: 768px) {
