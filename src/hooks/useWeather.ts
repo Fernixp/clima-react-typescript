@@ -1,7 +1,9 @@
 import type { SearchType } from "../types";
 import axios from "axios";
+import { useMemo, useState } from "react";
 import { z } from "zod";
 
+/* Usando Zod para validar la respuesta de la API del clima */
 const Weather = z.object({
     name: z.string(),
     main: z.object({
@@ -11,9 +13,18 @@ const Weather = z.object({
     })
 })
 
-type WeatherType = z.infer<typeof Weather>
+export type WeatherType = z.infer<typeof Weather>
 
 export default function useWeather() {
+
+    const [weather, setWeather] = useState<WeatherType>({
+        name: '',
+        main: {
+            temp: 0,
+            temp_min: 0,
+            temp_max: 0,
+        }
+    });
     /* usamos dotenv */
     const api_key = import.meta.env.VITE_API_KEY;
     const fetchWeather = async (search: SearchType) => {
@@ -25,24 +36,24 @@ export default function useWeather() {
 
             const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`;
             
-            console.log(weatherUrl);
             const {data: weatherData} = await axios(weatherUrl);
             //Zod
             const result = Weather.safeParse(weatherData);
             if (result.success) {
-                console.log(result.data.name);
-                console.log(result.data.main.temp);
-                console.log(result.data.main.temp_min);
-                console.log(result.data.main.temp_max);
-                return;
-            }else{
+                setWeather(result.data);
+            } else {
                 console.log('respuesta mal formada');
             }
         } catch (error) {
             console.log('Error al obtener el clima: ' + error);
         }
     }
+
+    const hasWeatherData = useMemo(() => weather.name, [weather.name]);
+
     return {
-        fetchWeather
+        weather,
+        fetchWeather,
+        hasWeatherData
     }
 }
