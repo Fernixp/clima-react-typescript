@@ -28,13 +28,24 @@ export default function useWeather() {
 
     /* Loader */
     const [loading, setLoading] = useState(false);
+
+    /* No encontrado - manejar caso cuando la ciudad no se encuentra */
+    const [notFound, setNotFound] = useState(false);
     /* usamos dotenv */
     const api_key = import.meta.env.VITE_API_KEY;
     const fetchWeather = async (search: SearchType) => {
         setLoading(true);
+        setNotFound(false);
         try {
             const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${api_key}`;
             const {data} = await axios(geoUrl);
+
+            /* Si llega array vacio, no hay resultados */
+            if (data.length === 0) {
+                console.log('No se encontró la ciudad');
+                setNotFound(true);
+                return;
+            }
             const lat = data[0].lat;
             const lon = data[0].lon;
 
@@ -61,6 +72,7 @@ export default function useWeather() {
         weather,
         fetchWeather,
         hasWeatherData,
-        loading
+        loading,
+        notFound
     }
 }
